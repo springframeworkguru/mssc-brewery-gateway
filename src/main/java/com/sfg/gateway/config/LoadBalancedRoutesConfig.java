@@ -9,22 +9,23 @@ import org.springframework.context.annotation.Profile;
 /**
  * Created by jt on 3/7/20.
  */
-@Profile("!local-discovery")
+@Profile("local-discovery")
 @Configuration
-public class LocalHostRouteConfig {
+public class LoadBalancedRoutesConfig {
 
     @Bean
-    public RouteLocator localHostRoutes(RouteLocatorBuilder builder){
+    public RouteLocator loadBalancedRoutes(RouteLocatorBuilder builder){
         return builder.routes()
                 .route(r -> r.path("/api/v1/beer*", "/api/v1/beer/*", "/api/v1/beerUpc/*")
-                        .uri("http://localhost:8080")
+                        .uri("lb://beer-service")
                         .id("beer-service"))
                 .route(r -> r.path("/api/v1/customers/**")
-                        .uri("http://localhost:8081")
+                        .uri("lb://order-service")
                         .id("order-service"))
                 .route(r -> r.path("/api/v1/beer/*/inventory")
-                        .uri("http://localhost:8082")
+                        .uri("lb://inventory-service")
                         .id("inventory-service"))
                 .build();
     }
+
 }
